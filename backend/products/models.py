@@ -8,7 +8,7 @@ Create Product Model:
 """
 class Product(models.Model):
     title=models.CharField(max_length=120)
-    content = models.TextField()
+    content = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=15, default=0.0, decimal_places=2)
 
     @property
