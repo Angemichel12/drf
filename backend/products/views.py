@@ -1,10 +1,12 @@
-from rest_framework import generics
+from rest_framework import generics, mixins, permissions, authentication
 from .models import Product
 from .serializers import ProductSerializer
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -41,3 +43,35 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
     
 product_destroy_apiview = ProductDestroyAPIView.as_view()
+
+# class ProductMixinView(mixins.ListModelMixin,
+#                        mixins.RetrieveModelMixin,
+#                        mixins.CreateModelMixin,
+#                        mixins.UpdateModelMixin,
+#                        mixins.DestroyModelMixin, 
+#                        generics.GenericAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     lookup_field = 'pk'
+
+#     def get(self,request, *args,**kwargs):
+#         pk = kwargs.get("pk")
+#         if pk is not None:
+#             return self.retrieve(request, *args, **kwargs)
+#         return self.list(request, *args, **kwargs)
+    
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+#     def perform_create(self, serializer):
+#         title = serializer.validated_data.get('title')
+#         content = serializer.validated_data.get('content')
+#         if not content:
+#             content = "This is cool stuff by mixin"
+#             print(content)
+#         serializer.save(content=content)
+#     def patch(self, request, *args, **kwargs):
+#         return self.partial_update(request, *args, **kwargs)
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+    
+# product_mixin_view = ProductMixinView.as_view()
