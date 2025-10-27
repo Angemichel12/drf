@@ -17,5 +17,3 @@ class Product(models.Model):
     
     def get_discount(self):
         return "123"
-    def get_promotion(self):
-        return '200'
