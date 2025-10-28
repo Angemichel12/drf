@@ -1,12 +1,14 @@
-from rest_framework import generics, permissions, authentication
+from rest_framework import generics, permissions, authentication,mixins
 from .models import Product
 from .serializers import ProductSerializer
+from .permissions import IsStaffEditorPermissions
+from api.authentications import TokenAuthentication
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    authentication_classes = [authentication.SessionAuthentication, TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
     
 
     def perform_create(self, serializer):
@@ -44,6 +46,58 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
     
 product_destroy_apiview = ProductDestroyAPIView.as_view()
+
+"""
+This is my own Product view using mixins with:
+- Get all products and product detail.
+- Post products
+- Update Products
+- Delete Products
+"""
+
+# class ProductViewMaxims(mixins.ListModelMixin,mixins.RetrieveModelMixin,mixins.CreateModelMixin,generics.GenericAPIView,mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     lookup_field = 'pk'
+
+#     def get(self,request,*args, **kwargs):
+#         pk = kwargs.get('pk')
+#         if pk is not None:
+#             return self.retrieve(request, *args, **kwargs)
+        
+#         return self.list(request, *args, **kwargs)
+#     def post(self,request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+#     def perform_create(self,serializer):
+#         title = serializer.validated_data.get('title')
+#         content = serializer.validated_data.get('content')
+#         if not content:
+#             content = title
+#         serializer.save(content=content)
+
+#     def patch(self,request,*args, **kwargs):
+#         return self.partial_update(request, *args, **kwargs)
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # class ProductMixinView(mixins.ListModelMixin,
 #                        mixins.RetrieveModelMixin,

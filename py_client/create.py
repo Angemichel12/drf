@@ -2,7 +2,7 @@ import requests
 
 endpoint = 'http://localhost:8000/api/products/'
 data = {
-    'title':'Curry Irving Jersey',
+    'title':'Curry',
     'price':100
 }
 response = requests.post(endpoint, json=data)
