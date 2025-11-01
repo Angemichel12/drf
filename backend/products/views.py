@@ -1,14 +1,13 @@
 from rest_framework import generics, permissions, authentication,mixins
 from .models import Product
 from .serializers import ProductSerializer
-from .permissions import IsStaffEditorPermissions
+from api.mixins import IsStaffEditorPermissionMixin
 from api.authentications import TokenAuthentication
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(IsStaffEditorPermissionMixin,generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [authentication.SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
     
 
     def perform_create(self, serializer):
@@ -20,14 +19,14 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(content=content)
 
 product_list_create_view = ProductListCreateAPIView.as_view()
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(IsStaffEditorPermissionMixin,generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 product_detail_view = ProductDetailAPIView.as_view()
 
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(IsStaffEditorPermissionMixin,generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
@@ -39,7 +38,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
 
 product_update_apiveiw = ProductUpdateAPIView.as_view()
 
-class ProductDestroyAPIView(generics.DestroyAPIView):
+class ProductDestroyAPIView(IsStaffEditorPermissionMixin,generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     def perform_destroy(self, instance):
